@@ -1,0 +1,42 @@
+{
+    "name": "pimento",
+    "version": "1.0.0",
+    "description": "PICI insttitutional memory",
+    "main": "index.js",
+    "directories": {
+        "doc": "doc",
+        "test": "test"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.0",
+        "@mui/material": "^7.1.2",
+        "create-react-class": "^15.7.0",
+        "katex": "0.12.0",
+        "markdown-it": "14.1.0",
+        "markdown-it-block-image": "0.0.3",
+        "markdown-it-footnote": "3.0.3",
+        "markdown-it-texmath": "1.0.0",
+        "markdown-it-toc-done-right": "4.2.0",
+        "punycode": "2.1.1",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-vega": "^7.6.0",
+        "vega-lite": "5.15.1",
+	"react-draggable": "^4.5.0"
+    },
+    "devDependencies": {
+        "shadow-cljs": "2.26.5"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hyperphor/nlfmae.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "homepage": "https://github.com/hyperphor/nlflame"
+}
