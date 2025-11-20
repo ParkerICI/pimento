@@ -6,9 +6,14 @@
 
 (def examples
   ["What efforts exist to analyze adverse immune events?"
-   "Which researches know the most about CAR-t therapy?"
-   "Are there any projects or researchers looking into pancreatinc cancer?"
+   "Which researchers know the most about CAR-T therapy?"
+   "Are there any projects or researchers looking into pancreatic cancer?"
    "Who does PICI fund at UCSF?"
+   "what grants have gone to Dr. Beatriz Carreno?"
+   "Tell me everthing about this project \"Mutant KRAS TCR – from Proof-of-Concept clinical trial to second generation TCR therapy.\""
+   "List the 10 most recent PICI grants for amounts over $1,000,000."
+   "Who is using LLMs for understanding cancer and therapy mechanisms? Please list relevant projects."
+   "tell me about Allison Betof Warner's work on therapy evolution"
    ])
 
 (defn ui

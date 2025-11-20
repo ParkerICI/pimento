@@ -41,9 +41,14 @@
   [m ks]
   (reduce get* m ks))
 
+;;; Or, this could go in :instructions field
+(def query-extra " Focus on PICI sponsored projects and network members.")
+
+;;; This is the whole server logic
 (defmethod exec :pquery
   [_ query]
-  (let [response (openai/run-response query)]
+  (let [aug-query (str query query-extra)
+        response (openai/run-response aug-query)]
     {:id (:id response)
      :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
       

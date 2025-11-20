@@ -10,7 +10,7 @@
 
 (defn -main
   [& args]
-  (let [port (or (first args) "2282")
+  (let [port (or (first args) (env/env :port))
         config (or (second args) "config.edn")]
     (config/read-config config)
     (let [port (or port (env/env :port) )]
