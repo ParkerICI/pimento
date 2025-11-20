@@ -3,6 +3,8 @@
             [com.hyperphor.way.handler :as wh]
             [com.hyperphor.way.views.html :as html]
             [ring.util.response :as response]
+            [hyperphor.multitool.core :as u]
+            [pimento.openai :as openai]
             )
   )
 
@@ -28,3 +30,20 @@
   []
   (wh/app site-routes api-routes))
 
+(defn get*
+  [from key]
+  (if (and (fn? key) (vector? from))
+    (u/some-thing key from)
+    (get from key)))
+
+(defn get-in*
+  "Like core/get-in but a key (selector) can be a predicate fn, cvalue is first true element. "
+  [m ks]
+  (reduce get* m ks))
+
+(defmethod exec :pquery
+  [_ query]
+  (let [response (openai/run-response query)]
+    {:id (:id response)
+     :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
+      

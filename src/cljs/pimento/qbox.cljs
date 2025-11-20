@@ -83,6 +83,11 @@
   [id response]
   (rf/dispatch [:set-pin id :out response]))
 
+(defmethod handle-response :pquery
+  [cid {:keys [text id] :as response}]
+  (rf/dispatch [:set-pin cid :out text])
+  (rf/dispatch [:set-pin cid :conversation id]))
+
 ;;; TODO methodize
 (rf/reg-event-db
  :qbox-query-response

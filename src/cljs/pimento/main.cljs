@@ -1,11 +1,14 @@
 (ns pimento.main
-  (:require [pimento.qbox :as qbox])
+  (:require [pimento.qbox :as qbox]
+            [pimento.markdown :as md]
+            [pimento.pins :as p])
   )
 
 (defn ui
   []
   [:div
    [:h1 "Pimento"]
-   [:input {:id :query}]
-   [:textarea]
-   [qbox/view :pimento]])
+   [qbox/view :pquery]
+   [md/view :response]
+   (p/wire :pquery :out :response :in)
+   ])
