@@ -4,11 +4,17 @@
             [pimento.pins :as p])
   )
 
+(def examples
+  ["What efforts exist to analyze adverse immune events?"
+   "Which researches know the most about CAR-t therapy?"
+   "Are there any projects or researchers looking into pancreatinc cancer?"
+   "Who does PICI fund at UCSF?"
+   ])
+
 (defn ui
   []
   [:div
-   [:h1 "Pimento"]
-   [qbox/view :pquery]
-   [md/view :response]
+   [qbox/view :pquery :width "800px" :title "Query" :examples (map (fn [e] {:nl e}) examples)]
+   [md/view :response :width "800px" :title "Response"]
    (p/wire :pquery :out :response :in)
    ])

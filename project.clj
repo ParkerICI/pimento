@@ -13,6 +13,12 @@
                  [thheller/shadow-cljs "3.1.8"] ;TODO maybe only in dev profile
                  ]
   :main ^:skip-aot pimento.core
+  :source-paths ["src/cljc" "src/clj" "src/cljs"] 
   :target-path "target/%s"
+  :uberjar-name "pimento-standalone.jar"
   :profiles {:uberjar {:aot :all
+                       :resource-paths ["resources"]
+                       :prep-tasks
+                       ["compile" 
+                        ["run" "-m" "shadow.cljs.devtools.cli" "release" "app"]]
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})

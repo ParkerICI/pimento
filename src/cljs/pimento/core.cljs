@@ -15,7 +15,7 @@
 (defn header
   []
   [:div.header
-   [:h1 "NLFlame ontology-based query tool"
+   [:h1 "PIMENTO: PICI Institutional Memory"
     [:span.m-3 
      (when @(rf/subscribe [:loading?])
        (wu/spinner 1))]
