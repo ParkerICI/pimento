@@ -26,9 +26,9 @@
         (map :nl examples)
         "Choose an example or type a query"
         false
-        {:width "680px" :padding "5px"}
+        {:width "680px" :padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
         ))
-     [:div.vstack.m-3
+     [:div.hstack.m-3
       [form/form-field {:type :textarea
                         :path [id :query-text]
                         :label "Type a query" ;maybe only if no example

@@ -39,6 +39,19 @@
                  :as :json
                  })))
 
+(defn api-post-stream
+  [url params]
+  (:body
+   (client/post (str "https://api.openai.com/v1" url)
+                {:body (clojure.data.json/write-str params)
+                 :content-type :application/json
+                 :headers {"Authorization" (str "Bearer " (api-key))
+                           "OpenAI-Beta" "assistants=v2"}
+                 :as :stream
+                 ;; :async? true
+                 }
+                )))
+
 (defn api-upload
   [url params file]
   (:body
@@ -155,20 +168,55 @@
 (defn run-response
   [q & params]
   (api-post "/responses"
-            (merge
-             {:model "gpt-4.1"
-             :input q
-             ;; :conversation ...
-             ;; :instructions
-             ;; :previous_response_id
+                (merge
+                 {:model "gpt-4.1"
+                  :input q
+                  ;; :conversation ...
+                  ;; :instructions
+                  ;; :previous_response_id
 
-             ;; This causes chunks and doc referenmces to be returned
-             ;; :include ["file_search_call.results"]
-             :tools [{:type "file_search",
-                      :vector_store_ids [pici-vector-store]
-                      :max_num_results 20
-                      }]
-              }
-             params)))
+                  ;; This causes chunks and doc referenmces to be returned
+                  ;; :include ["file_search_call.results"]
+                  :tools [{:type "file_search",
+                           :vector_store_ids [pici-vector-store]
+                           :max_num_results 20
+                           }]
+                  }
+                 params)
+                ))
 
+;;; Not yet used, streaming needs to work on fe, maybe with websocket? Argh
+;;; Returns a stream of events, see https://platform.openai.com/docs/guides/streaming-responses?api-mode=responses
+(defn run-response-stream
+  [q & params]
+   (api-post-stream
+    "/responses"
+    (merge
+     {:model "gpt-4.1"
+      :input q
+      :stream true
+      ;; :conversation ...
+      ;; :instructions
+      ;; :previous_response_id
 
+      ;; This causes chunks and doc referenmces to be returned
+      ;; :include ["file_search_call.results"]
+      :tools [{:type "file_search",
+               :vector_store_ids [pici-vector-store]
+               :max_num_results 20
+               }]
+      }
+     params)))
+
+(defn print-stream
+  [stream]
+  (let [reader (clojure.java.io/reader stream)
+        lines (take-while identity (repeatedly #(.readLine reader)))]
+    (doseq [line lines]
+      (when (str/starts-with? line "data:")
+          (let [data (json/read-str (subs line 6) :key-fn keyword)
+                delta (:delta data)]
+            (when delta
+              (print delta))
+            )))))
+            

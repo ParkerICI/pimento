@@ -14,6 +14,7 @@
    "List the 10 most recent PICI grants for amounts over $1,000,000."
    "Who is using LLMs for understanding cancer and therapy mechanisms? Please list relevant projects."
    "tell me about Allison Betof Warner's work on therapy evolution"
+   "Explain the role of organoid models in immunotherapy research in layman's terms."
    ])
 
 (defn ui

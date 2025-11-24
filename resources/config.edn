@@ -4,5 +4,5 @@
  :basic-auth-creds ["PICI" "memberberries"]
  :colophon  ["Copyright © " [:a {:href "http://parkerici.org" :style "color: white;"} "Parker Institute"] " 2025-"] 
  :heroku {:force-ssl true}
- :css ["/css/okc.css"]
+ :css ["/css/pimento.css"]
  }
