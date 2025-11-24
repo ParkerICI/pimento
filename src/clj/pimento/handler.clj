@@ -54,10 +54,14 @@
 (defmethod exec :pquery
   [_ query]
   (let [aug-query (str query query-extra)
-        response (openai/run-response aug-query)]
+        start-time (ju/now)
+        response (openai/run-response aug-query)
+        end-time (ju/now)]
     (in-background
-      ;; TODO time (duration)
-     (dlog/write-item {:query query :response response})) ;TODO conversation 
+      (dlog/write-item {:query query
+                        :response response ;serialized edn of full response
+                        :duration (- (.getTime end-time) (.getTime start-time))}))
+
     {:id (:id response)
      :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
       
