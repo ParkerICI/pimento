@@ -6,6 +6,14 @@
   :dependencies [[org.clojure/clojure "1.12.2"]
                  [com.hyperphor/multitool "0.2.1"]
                  [com.hyperphor/way "0.1.21"]
+
+                 ;; Logging
+                 [com.cognitect.aws/api "LATEST" :exclusions [org.eclipse.jetty/jetty-http
+                                                              org.eclipse.jetty/jetty-io
+                                                              org.eclipse.jetty/jetty-util]]
+                 [com.cognitect.aws/endpoints  "LATEST"]
+                 [com.cognitect.aws/dynamodb "LATEST"]
+
                  ;; frontend
                  ;; See packge.json for the real ones
                  
