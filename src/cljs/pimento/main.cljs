@@ -15,6 +15,8 @@
    "Who is using LLMs for understanding cancer and therapy mechanisms? Please list relevant projects."
    "tell me about Allison Betof Warner's work on therapy evolution"
    "Explain the role of organoid models in immunotherapy research in layman's terms."
+   "What kind of unique IP has PICI developed?"
+   "Tell me everything about the pHLA-TCR Mapping Platform with a focus on IP."
    ])
 
 (defn ui

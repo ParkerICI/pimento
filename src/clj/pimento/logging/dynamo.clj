@@ -115,3 +115,8 @@
                 :Item (tag-attributes item)}})
     ))
 
+
+;;; TODO have a web page with responses
+(defn report
+  []
+  (sort-by first (map (juxt :datetime :query) (pimento.logging.dynamo/list-items))))
