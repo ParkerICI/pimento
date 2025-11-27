@@ -115,6 +115,14 @@
                 :Item (tag-attributes item)}})
     ))
 
+(defn delete-item
+  [item]
+  (invoke-with-error
+   :dynamodb
+   {:op :DeleteItem
+    :request  {:TableName table-name
+               :Key (tag-attributes (select-keys item [:datetime]))}}))
+
 
 ;;; TODO have a web page with responses
 (defn report
