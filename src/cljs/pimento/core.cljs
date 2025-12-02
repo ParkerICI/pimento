@@ -26,11 +26,12 @@
   [:div.p-3 {:style {:width "800px"}}
    [:p
     "PIMENTO is a tool for querying PICI's institutional memory."]
-   [:p "A product of Hyperphor, sponsored by the Parker Institute for Cancer Immunotherapy"]
+   [:p "Note: current knowledge set is based on recent research reports, so there isn't much here about earlier (pre-2023) research projects. This may be corrected in later releases."]
+
+   [:p "A product of " [:a {:href "https://hyperphor.com"} "Hyperphor"]", sponsored by the " [:a {:href "https://parkerici.org"} "Parker Institute for Cancer Immunotherapy"] "."]
    [:p
     [:a {:href "https://github.com/parkerici/pimento"} "Source"]]
    ])
-
 
 ;;; TEMP replaces one in  way/ionit.cljs
 ;;; No aparently not loaded in time, put it in core

@@ -22,7 +22,14 @@
 (defn ui
   []
   [:div
-   [qbox/view :pquery :width "800px" :title "Query" :examples (map (fn [e] {:nl e}) examples)]
-   [md/view :response :width "800px" :title "Response"]
+   [qbox/view :pquery
+    :width "800px"
+    :title "Query"
+    :examples (map (fn [e] {:nl e}) examples)]
+   [md/view :response
+    :width "800px"
+    :height "100%"
+    :title "Response"]
    (p/wire :pquery :out :response :in)
+   #_ (p/wire :pquery :conversation :pquery :conversation) ;for now. really just response id
    ])
