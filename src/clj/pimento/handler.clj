@@ -7,6 +7,7 @@
             [hyperphor.multitool.cljcore :as ju]
             [pimento.openai :as openai]
             [pimento.logging.dynamo :as dlog]
+            [com.hyperphor.way.data :as data]
             )
   )
 
@@ -66,3 +67,12 @@
     {:id (:id response)
      :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
       
+;;; Try using way data mechanims
+
+;;; TEMP
+(def explain-term-memoized (memoize openai/explain-term))
+
+(defmethod data/data :explain
+  [{:keys [term]}]
+  (let [explanation (explain-term-memoized term) ]
+    [{:explanation explanation}]))

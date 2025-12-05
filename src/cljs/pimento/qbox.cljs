@@ -7,7 +7,6 @@
             [com.hyperphor.way.api :as api]
             [hyperphor.multitool.core :as u]
             [com.hyperphor.way.draggable :as d] ;TODO not really
-            #_ hyperphor.nlflame.pins
             [com.hyperphor.way.ui.config :as config]
             )
   )

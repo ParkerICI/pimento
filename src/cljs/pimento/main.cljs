@@ -1,6 +1,7 @@
 (ns pimento.main
   (:require [pimento.qbox :as qbox]
             [pimento.markdown :as md]
+            [pimento.explain :as xp]
             [pimento.pins :as p])
   )
 
@@ -31,5 +32,35 @@
     :height "100%"
     :title "Response"]
    (p/wire :pquery :out :response :in)
+
+   ;; Conversation
+
    #_ (p/wire :pquery :conversation :pquery :conversation) ;for now. really just response id
+
+   ;; Explaination
+
+   [xp/generator-view :xgen
+    :initial-x 900
+    :initial-y 0
+    :width "450px"
+    ]
+
+   (p/wire :response :selection :xgen :in)
+
+
+   #_
+   [md/view :x1
+    :title "Tumor-Infiltrating Lymphocyte Therapy"
+    :content "Tumor-Infiltrating Lymphocyte (TIL) Cell Therapy is a cancer treatment that uses a patient’s own immune cells found inside their tumor. These immune cells (lymphocytes), which can recognize and attack cancer cells, are collected from the tumor, grown and multiplied in the lab, and then infused back into the patient to help their immune system fight the cancer more effectively."
+    :initial-x 900 :initial-y 0
+    :height nil
+    ]
+
+   #_
+   [md/view :x2
+    :title "organoid"
+    :content (md/markdown-content-bare "An **organoid** is a tiny, simplified version of an organ grown in a lab from stem cells. It mimics key features of the real organ—such as its structure and function—but is much smaller and less complex. Researchers use organoids to study how organs work, test drugs, and understand diseases, including cancer.")
+    :initial-x 900 :initial-y 0
+    :height nil
+    ]
    ])

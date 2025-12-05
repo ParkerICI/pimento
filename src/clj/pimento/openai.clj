@@ -166,24 +166,43 @@
 
 ;;; Returns frull response, caller can unpack
 (defn run-response
-  [q & params]
+  [q & [params]]
   (api-post "/responses"
-                (merge
-                 {:model "gpt-4.1"
-                  :input q
-                  ;; :conversation ...
-                  ;; :instructions
-                  ;; :previous_response_id
+            (merge
+             {:model "gpt-4.1"
+              :input q
+              ;; :conversation ...
+              ;; :instructions
+              ;; :previous_response_id
 
-                  ;; This causes chunks and doc referenmces to be returned
-                  ;; :include ["file_search_call.results"]
-                  :tools [{:type "file_search",
-                           :vector_store_ids [pici-vector-store]
-                           :max_num_results 20
-                           }]
-                  }
-                 params)
-                ))
+              ;; This causes chunks and doc referenmces to be returned
+              ;; :include ["file_search_call.results"]
+
+              }
+             params)
+            ))
+
+
+(defn rag-response
+  [q]
+  (run-response
+   q
+   {
+    ;; This causes chunks and doc referenmces to be returned
+    ;; :include ["file_search_call.results"]
+    :tools [{:type "file_search",
+             :vector_store_ids [pici-vector-store]
+             :max_num_results 20
+             }]}))
+
+(defn explain-term
+  [term]
+  (->
+   (run-response (u/tx "Explain the term '{{term}}.'")
+                 {:instructions "You are an expert in cancer immunotheraphy explaining the basics to an intelligent layperson. Keep responses brief and omit introductions and calls to action"})
+   (get-in [:output 0 :content 0 :text])))
+
+
 
 ;;; Not yet used, streaming needs to work on fe, maybe with websocket? Argh
 ;;; Returns a stream of events, see https://platform.openai.com/docs/guides/streaming-responses?api-mode=responses
