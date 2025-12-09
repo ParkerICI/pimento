@@ -22,45 +22,32 @@
 
 (defn ui
   []
-  [:div
-   [qbox/view :pquery
-    :width "800px"
-    :title "Query"
-    :examples (map (fn [e] {:nl e}) examples)]
-   [md/view :response
-    :width "800px"
-    :height "100%"
-    :title "Response"]
-   (p/wire :pquery :out :response :in)
+  (let
+      [v
+       [:div.hstack.gap-3
+        [:div.vstack.col-md-1.gap-3
+         [qbox/view :pquery
+          :width "100%"
+          :title "Query"
+          :examples (map (fn [e] {:nl e}) examples)]
+         [md/view :response
+          :width "100%"
+          :height "100%"
+          :title "Response"]]
+        [:div.vstack.col-md-1.gap-3
+         [xp/generator-view :xgen
+          :width "450px"
+          ]
+         [xp/saved-terms]]]]    
 
-   ;; Conversation
+    (p/wire :pquery :out :response :in)
 
-   #_ (p/wire :pquery :conversation :pquery :conversation) ;for now. really just response id
+    ;; Conversation
 
-   ;; Explaination
+    #_ (p/wire :pquery :conversation :pquery :conversation) ;for now. really just response id
 
-   [xp/generator-view :xgen
-    :initial-x 900
-    :initial-y 0
-    :width "450px"
-    ]
+    ;; Explaination
 
-   (p/wire :response :selection :xgen :in)
-
-
-   #_
-   [md/view :x1
-    :title "Tumor-Infiltrating Lymphocyte Therapy"
-    :content "Tumor-Infiltrating Lymphocyte (TIL) Cell Therapy is a cancer treatment that uses a patient’s own immune cells found inside their tumor. These immune cells (lymphocytes), which can recognize and attack cancer cells, are collected from the tumor, grown and multiplied in the lab, and then infused back into the patient to help their immune system fight the cancer more effectively."
-    :initial-x 900 :initial-y 0
-    :height nil
-    ]
-
-   #_
-   [md/view :x2
-    :title "organoid"
-    :content (md/markdown-content-bare "An **organoid** is a tiny, simplified version of an organ grown in a lab from stem cells. It mimics key features of the real organ—such as its structure and function—but is much smaller and less complex. Researchers use organoids to study how organs work, test drugs, and understand diseases, including cancer.")
-    :initial-x 900 :initial-y 0
-    :height nil
-    ]
-   ])
+    (p/wire :response :selection :xgen :in)
+    v
+    ))

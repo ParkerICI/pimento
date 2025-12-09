@@ -127,4 +127,5 @@
 ;;; TODO have a web page with responses
 (defn report
   []
-  (sort-by first (map (juxt :datetime :query) (pimento.logging.dynamo/list-items))))
+  (sort-by first (map (juxt :datetime :query)
+                      (list-items))))

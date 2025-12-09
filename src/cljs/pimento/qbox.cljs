@@ -75,7 +75,7 @@
        (assoc-in [:form id :query-text] text)
        )))
 
-;;; TODO differntiate id and type of service
+;;; TODO differentiate id and type of service
 (defmulti handle-response (fn [id response] id))
 
 (defmethod handle-response :default

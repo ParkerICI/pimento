@@ -20,7 +20,6 @@
   [text id]
   [:div
    {:id (name id)
-    ;; TODO trim, ignore blanks
     :on-mouse-up #(let [selection (.getSelection js/window)
                         selected-text (when selection (str/trim (str selection)))]
                     (when (not (empty? selected-text)) 

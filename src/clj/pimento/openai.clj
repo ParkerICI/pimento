@@ -53,14 +53,11 @@
                 )))
 
 (defn api-upload
-  [url params file]
+  [file]
   (:body
-   (client/post (str "https://api.openai.com/v1" url)
+   (client/post "https://api.openai.com/v1/files"
                 {
-                 :multipart [;; {:name "title" :content "My Awesome Picture"}
-                             ;; {:name "Content/type" :content "image/jpeg"}
-                             ;; {:name "foo.txt" :part-name "eggplant" :content "Eggplants"}
-                             {:name "purpose" :content "user_data"}
+                 :multipart [{:name "purpose" :content "assistants"} 
                              {:name "file" :content (clojure.java.io/file file)}]
                  :headers {"Authorization" (str "Bearer " (api-key))
                            "OpenAI-Beta" "assistants=v2"}
@@ -134,16 +131,20 @@
 ;;; Entirely new API
 
 ;;; Files
+
 (defn file-ids
   []
   (->> (api-get "/files" {})
        :data
        (map :id)))
 
-(defn upload-file
-  [f]
-  (-> (api-upload "/files" {} f)
-      (get-in [:data :id])))
+;;; api-upload
+
+;;; Files
+
+(defn get-file-content
+  [id]
+  (api-get (u/tx "/files/{{id}}/content") {}))
 
 (comment 
   (doseq [f (hyperphor.multitool.cljcore/list-dir-recursive "/Users/mt/Downloads/Partial Grant Docs/")]
@@ -164,6 +165,30 @@
 
 (def pici-vector-store "vs_691d3d3673808191bd8dcd8a6f64f3c4")
 
+(defn store-status
+  [store-id]
+  (api-get (u/tx "/vector_stores/{{store-id}}") {}))
+
+(comment
+  (store-status pici-vector-store))
+
+;;; Not normally called, this is done via the search tool during query
+(defn search-store
+  [id q]
+  (api-post (u/tx "/vector_stores/{{id}}/search")
+            {:query q}))
+
+(comment
+  (search-store pici-vector-store "what's happening in melanoma?"))
+
+
+;;; Add file to store
+(defn store-add-file
+  [store-id file-id]
+  (api-post (u/tx "/vector_stores/{{store-id}}/files")
+            {:file_id file-id}))
+
+
 ;;; Returns frull response, caller can unpack
 (defn run-response
   [q & [params]]
@@ -182,7 +207,6 @@
              params)
             ))
 
-
 (defn rag-response
   [q]
   (run-response
@@ -192,8 +216,24 @@
     ;; :include ["file_search_call.results"]
     :tools [{:type "file_search",
              :vector_store_ids [pici-vector-store]
-             :max_num_results 20
+             :max_num_results 12        ;Was 20, but hopefully this will be faster
              }]}))
+
+(defn rag-plus-compute-response
+  [q]
+  (run-response
+   []
+   {
+    ;; This causes chunks and doc referenmces to be returned
+    :include ["file_search_call.results"]
+    :tools [{:type "file_search",
+             :vector_store_ids [pici-vector-store]
+             :max_num_results 20        ;Was 20, but hopefully this will be faster
+             }
+            #_ {:type "code_interpreter"
+             :container {:type "auto"}
+             }]
+    }))
 
 (defn explain-term
   [term]
@@ -239,3 +279,4 @@
               (print delta))
             )))))
             
+
