@@ -51,15 +51,33 @@
   [& body]
   `(future-call (fn [] ~@body)))
 
+;;; For dev efficency mostly
+(def rag-response-memoized (memoize openai/rag-response))
+
 ;;; This is the whole server logic
 (defmethod exec :pquery
   [_ query]
   (let [aug-query (str query query-extra)
         start-time (ju/now)
-        response (openai/run-response aug-query)
+        response (rag-response-memoized aug-query) ;Memoized for dev purposes mostly
         end-time (ju/now)]
     (in-background
-      ;; TODO should store githash or something
+      ;; TODO should store githash or something. And version the text doc collection somehow. 
+      (dlog/write-item {:query query
+                        :response response ;serialized edn of full response
+                        :duration (- (.getTime end-time) (.getTime start-time))}))
+
+    {:id (:id response)
+     :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
+
+(defmethod exec2 :pquery
+  [{:keys [query conversation]}]
+  (let [aug-query (str query query-extra)
+        start-time (ju/now)
+        response (openai/rag-response aug-query :conversation conversation)
+        end-time (ju/now)]
+    (in-background
+      ;; TODO should store githash or something. And version the text doc collection somehow. 
       (dlog/write-item {:query query
                         :response response ;serialized edn of full response
                         :duration (- (.getTime end-time) (.getTime start-time))}))

@@ -235,13 +235,24 @@
              }]
     }))
 
+(def targets
+  ["a five-yaar old"
+   "a high-school student"
+   "an intelligent layman"
+   #_  "a stupid layman"                    ;well they exist ... probably not going to be reading this though!
+   "a scientist in a different field"
+   "a religious fundamentalist"])
+
 (defn explain-term
-  [term]
+  [term & {:keys [target] :or {target "normal person"}}]
   (->
-   (run-response (u/tx "Explain the term '{{term}}.'")
-                 {:instructions "You are an expert in cancer immunotheraphy explaining the basics to an intelligent layperson. Keep responses brief and omit introductions and calls to action"})
+   (run-response (u/tx "Explain the term '{{term}}' as if talking to a {{target}}")
+                 {:instructions "You are an expert in cancer immunotheraphy. Keep responses brief and omit introductions and calls to action"})
    (get-in [:output 0 :content 0 :text])))
 
+(defn explain-multiple
+  [term]
+  (zipmap targets (map (fn [target] (explain-term term :target target)) targets)))
 
 
 ;;; Not yet used, streaming needs to work on fe, maybe with websocket? Argh

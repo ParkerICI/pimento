@@ -23,7 +23,7 @@
         nil
         #(rf/dispatch [:qbox-recall-example id %])
         (map :nl examples)
-        "Choose an example or type a query"
+        "Choose an example or type a query below"
         false
         {:width "680px" :padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
         ))

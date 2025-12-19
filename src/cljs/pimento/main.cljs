@@ -10,6 +10,7 @@
    "Which researchers know the most about CAR-T therapy?"
    "Are there any projects or researchers looking into pancreatic cancer?"
    "Who does PICI fund at UCSF?"
+   "What projects use sgRNA plasmids?"
    "what grants have gone to Dr. Beatriz Carreno?"
    "Tell me everthing about this project \"Mutant KRAS TCR – from Proof-of-Concept clinical trial to second generation TCR therapy.\""
    "List the 10 most recent PICI grants for amounts over $1,000,000."

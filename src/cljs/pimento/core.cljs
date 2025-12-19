@@ -10,6 +10,7 @@
    [org.candelbio.multitool.browser :as browser]
    [com.hyperphor.way.web-utils :as wu]
    [pimento.main :as main]
+   [pimento.eli :as eli]
    )) 
 
 (defn header
@@ -53,6 +54,7 @@
     (array-map
      :main main/ui
      :about about
+     :ELI eli/elit
      )
     []]
    ])
