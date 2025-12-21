@@ -13,6 +13,7 @@
   ["What efforts exist to analyze adverse immune events?"
    "Which researchers know the most about CAR-T therapy?"
    "Are there any projects or researchers looking into pancreatic cancer?"
+   "What companies have been created as a result of pici research?"
    "Who does PICI fund at UCSF?"
    "What projects use sgRNA plasmids?"
    "what grants have gone to Dr. Beatriz Carreno?"

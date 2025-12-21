@@ -11,6 +11,20 @@
             )
   )
 
+;;; TODO → way
+(defmethod form/form-field :textareax
+  [{:keys [type path label id hidden? disabled? value-fn style] :as args :or {value-fn identity width "100%"}}]
+  [:textarea.form-control
+   {:id id
+    :auto-focus true                    ;ADDING THIS
+    :style style
+    :value @(rf/subscribe [:form-field-value path])
+;    :disabled false
+    :on-change (fn [e]
+                 (rf/dispatch
+                  [:set-form-field-value path (-> e .-target .-value)]))
+    }])
+
 ;;; A generic UI component for NL queries with examples.
 ;;; TODO incorporate error handling (which logically should not be a separate card)
 (defn base-ui
@@ -24,12 +38,12 @@
         nil
         #(rf/dispatch [:qbox-recall-example id %])
         (map :nl examples)
-        "Choose an example or type a query below"
+        "Choose a sample query or type one below"
         false
         {:padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
         ))
      [:div.hstack.m-3
-      [form/form-field {:type :textarea
+      [form/form-field {:type :textareax
                         :path [id :query-text]
                         :label "Type a query" ;maybe only if no example
                         :style {:padding "5px"
