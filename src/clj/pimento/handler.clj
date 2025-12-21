@@ -91,6 +91,6 @@
 (def explain-term-memoized (memoize openai/explain-term))
 
 (defmethod data/data :explain
-  [{:keys [term]}]
-  (let [explanation (explain-term-memoized term) ]
+  [{:keys [term role]}]
+  (let [explanation (explain-term-memoized term {:target role}) ]
     [{:explanation explanation}]))

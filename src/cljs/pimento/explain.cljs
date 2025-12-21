@@ -30,9 +30,12 @@
 (defn generator-view
   [id & {:keys [title] :as args}]
   (let [term @(rf/subscribe [:pin id :in]) ;TODO :term
+        role @(rf/subscribe [:pin id :role])
         ;; TODO spinner should be in sane place. 
-        explanation (when term (get-in @(rf/subscribe [:data-valid :explain {:term term}]) ;TODO neither regular :data nor this feels right
-                                       [0 :explanation]))]
+        explanation (when term
+                      (get-in @(rf/subscribe
+                                [:data-valid :explain {:term term :role role}]) ;TODO neither regular :data nor this feels right
+                              [0 :explanation]))]
     (when term
       (rf/dispatch [:wire id :selection :xgen :in])
       [d/draggable-widget

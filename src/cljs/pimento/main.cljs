@@ -2,7 +2,11 @@
   (:require [pimento.qbox :as qbox]
             [pimento.markdown :as md]
             [pimento.explain :as xp]
-            [pimento.pins :as p])
+            [pimento.pins :as p]
+            [com.hyperphor.way.web-utils :as wu]
+            [re-frame.core :as rf]
+            [pimento.eli :as eli]
+            )
   )
 
 (def examples
@@ -36,6 +40,11 @@
           :height "100%"
           :title "Response"]]
         [:div.vstack.col-md-1.gap-3
+         (when @(rf/subscribe [:pin :response :in])
+           [:span.hstack.text-nowrap
+            "Select terms; explain like I'm"
+            [wu/select-widget :role nil #(rf/dispatch [:set-pin :xgen :role %]) eli/roles
+             nil false {:width "fit-content" :padding 5}]])
          [xp/generator-view :xgen
           :width "450px"
           ]

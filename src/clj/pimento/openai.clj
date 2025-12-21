@@ -290,4 +290,16 @@
               (print delta))
             )))))
             
+(comment
+  ;; Copy stuff from eli.cljs here
+  (defn add-term
+    [term]
+    {:term term
+     :explanations (zipmap roles (map #(explain-term term {:target %}) roles))})
 
+  (defn add-role
+    [role]
+    (map (fn [entry]
+           (assoc-in entry [:explanations role]
+                     (explain-term (:term entry) :target role)))
+         elis)))

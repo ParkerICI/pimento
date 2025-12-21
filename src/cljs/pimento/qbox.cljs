@@ -15,7 +15,8 @@
 ;;; TODO incorporate error handling (which logically should not be a separate card)
 (defn base-ui
   [id {:keys [examples button-label] :or {button-label "Go"} :as args}]
-  (let [query  @(rf/subscribe [:form-field-value [id :query-text]])]
+  (let [query @(rf/subscribe [:form-field-value [id :query-text]])
+        conversation @(rf/subscribe [:pin id :conversation])] ;TODO hardwiring this, since it is really within the component?
     [:div
      (when examples
        (wu/select-widget
@@ -25,22 +26,22 @@
         (map :nl examples)
         "Choose an example or type a query below"
         false
-        {:width "680px" :padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
+        {:padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
         ))
      [:div.hstack.m-3
       [form/form-field {:type :textarea
                         :path [id :query-text]
                         :label "Type a query" ;maybe only if no example
-                        :style {:width 600 
-                                :padding "5px"
+                        :style {:padding "5px"
                                 :margin-right "5px"
                                 :font-family "sans-serif"
                                 }
                         }]
       [:div.hstack.m-3
        [:button.btn.btn-primary
-        {:on-click #(rf/dispatch [:qbox-query id query])
-         :style {:margin-right "3px"}} button-label]
+        {:style {:margin-right "3px"}
+         :on-click #(rf/dispatch [:qbox-query id query {:conversation conversation}])} ;TODO backend
+        button-label]
        (when @(rf/subscribe [:qbox-spin? id])
          [wu/spinner 2])]]]))
 
@@ -57,8 +58,8 @@
 
 (rf/reg-event-db
  :qbox-query
- (fn [db [_ id query-text]]
-   (api/ajax-get "/api/exec" {:params {:type :qbox :id id :query query-text}
+ (fn [db [_ id query-text & rest]]
+   (api/ajax-get "/api/exec" {:params (merge {:type :qbox :id id :query query-text} (into {} rest))
                               :handler (fn [response] (rf/dispatch [:qbox-query-response id response]))})
    (assoc-in db [:qbox id :spin?] true)))
 
