@@ -22,12 +22,22 @@
   [id query]
   (throw (ex-info "No handler" {:id id  :query query})))
 
+;;; TODO use or flush
+(defmulti exec2 (fn [params] (:id params)))
+
+(defmethod exec2 :default
+  [params]
+  (throw (ex-info "No handler" params)))
+
 (defroutes api-routes
   ;; Could maybe be done under data, but seems kind of different
   (context "/api" []
-    (GET "/exec" [id query]
+    (GET "/exec" [id query conversation]
       (wh/content-response
-       (exec (keyword id) query)))))
+       (exec (keyword id) query)))
+    (GET "/exec2" params
+      (wh/content-response
+       (exec2 params)))))
 
 (defn app
   []

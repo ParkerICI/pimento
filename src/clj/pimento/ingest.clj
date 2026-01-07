@@ -20,32 +20,37 @@
          (rest rows))))
 
 
-(def awards (->> "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.tsv"
-                  read-tsv-maps
-                  #_ (map u/clean-map)))
+(comment
 
-(def cols (map keyword (first  (csv/read-csv (clojure.java.io/reader "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.tsv") :separator \tab))))
+  (def awards (->> "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.tsv"
+                   read-tsv-maps
+                   #_ (map u/clean-map)))
 
-(def col-counts (zipmap cols (map #(count (u/mapf % awards)) cols)))
+  (def cols (map keyword (first  (csv/read-csv (clojure.java.io/reader "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.tsv") :separator \tab))))
+
+  (def col-counts (zipmap cols (map #(count (u/mapf % awards)) cols)))
 
 ;;; ⩓⩔⩓ Upload .csv ⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔
 
-(api-upload "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.csv")
+  (api-upload "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.csv")
 
-{:expires_at nil,
- :purpose "assistants",
- :filename "2025.12.04 - Export All Awarded - Salesforce Funding Request.csv",
- :status "processed",
- :id "file-GFVFZJCahKRpJnr9gqkpDq",
- :bytes 7680911,
- :object "file",
- :created_at 1765173144,
- :status_details nil}
+  {:expires_at nil,
+   :purpose "assistants",
+   :filename "2025.12.04 - Export All Awarded - Salesforce Funding Request.csv",
+   :status "processed",
+   :id "file-GFVFZJCahKRpJnr9gqkpDq",
+   :bytes 7680911,
+   :object "file",
+   :created_at 1765173144,
+   :status_details nil}
 
-(store-add-file pici-vector-store  "file-GFVFZJCahKRpJnr9gqkpDq")
+  (store-add-file pici-vector-store  "file-GFVFZJCahKRpJnr9gqkpDq")
 
 
 ;;; Welp, that doesn't work that well, so go back to original plan
+
+
+  )
 
 ;;; Somewhat arbitrary selection; focusing more on science than funding/management
 (def interesting-columns
@@ -109,6 +114,7 @@
   (str/replace (name col) #"__c$" ""))
 
 ;;; Generate seq of markdown lines
+(declare awards)
 (defn write-md
   ([award]
    (concat
@@ -120,5 +126,6 @@
   ([]
    (mapcat write-md awards)))
 
-(ju/file-lines-out "docs/grants.md" (write-md))
+(comment 
+  (ju/file-lines-out "docs/grants.md" (write-md)))
 
