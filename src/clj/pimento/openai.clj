@@ -198,22 +198,18 @@
               :input q
               ;; :conversation ...
               ;; :instructions
-              ;; :previous_response_id
-
-              ;; This causes chunks and doc referenmces to be returned
-              ;; :include ["file_search_call.results"]
-
               }
              params)
             ))
 
 (defn rag-response
-  [q]
+  [q & [previous_response_id]]
   (run-response
    q
    {
     ;; This causes chunks and doc referenmces to be returned
     ;; :include ["file_search_call.results"]
+    :previous_response_id previous_response_id
     :tools [{:type "file_search",
              :vector_store_ids [pici-vector-store]
              :max_num_results 12        ;Was 20, but hopefully this will be faster

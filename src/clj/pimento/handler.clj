@@ -15,29 +15,23 @@
   ;; None needed for now, it's all SPA
   )
 
-;;; query I guess could be a string or a map
-(defmulti exec (fn [id query] id))
+;;; TODO use or flush
+(defmulti exec (fn [params] (:id params)))
 
 (defmethod exec :default
-  [id query]
-  (throw (ex-info "No handler" {:id id  :query query})))
-
-;;; TODO use or flush
-(defmulti exec2 (fn [params] (:id params)))
-
-(defmethod exec2 :default
   [params]
   (throw (ex-info "No handler" params)))
 
 (defroutes api-routes
   ;; Could maybe be done under data, but seems kind of different
   (context "/api" []
-    (GET "/exec" [id query conversation]
-      (wh/content-response
-       (exec (keyword id) query)))
-    (GET "/exec2" params
-      (wh/content-response
-       (exec2 params)))))
+    (GET "/exec" req
+      (let [params (-> (:params req)
+                       (update :id keyword)
+                       (update :type keyword)
+                       (update :conversation #(if (= % "null") nil %)))]
+        (wh/content-response
+         (exec params))))))
 
 (defn app
   []
@@ -66,25 +60,10 @@
 
 ;;; This is the whole server logic
 (defmethod exec :pquery
-  [_ query]
+  [{:keys [query conversation] :as params}]
   (let [aug-query (str query query-extra)
         start-time (ju/now)
-        response (rag-response-memoized aug-query) ;Memoized for dev purposes mostly
-        end-time (ju/now)]
-    (in-background
-      ;; TODO should store githash or something. And version the text doc collection somehow. 
-      (dlog/write-item {:query query
-                        :response response ;serialized edn of full response
-                        :duration (- (.getTime end-time) (.getTime start-time))}))
-
-    {:id (:id response)
-     :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
-
-(defmethod exec2 :pquery
-  [{:keys [query conversation]}]
-  (let [aug-query (str query query-extra)
-        start-time (ju/now)
-        response (openai/rag-response aug-query :conversation conversation)
+        response (openai/rag-response aug-query conversation)
         end-time (ju/now)]
     (in-background
       ;; TODO should store githash or something. And version the text doc collection somehow. 
