@@ -26,7 +26,7 @@
   []
   [:div.p-3 {:style {:width "800px"}}
    [:p
-    "PIMENTO is a tool for querying PICI's institutional memory. You can ask about research projects, network members, grants, results, companies, or anything else related. See the sample questions selector on the main page."]
+    "PIMENTO is a tool for querying PICI's institutional memory. You can ask about research projects, network members, grants, results, companies, or related topics. See the sample questions selector on the main page."]
 
    [:p "Current dataset includes scientific meeting summaries, project reviews, grant funding, proposals, site reports."]
 

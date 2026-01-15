@@ -15,7 +15,6 @@
   ;; None needed for now, it's all SPA
   )
 
-;;; TODO use or flush
 (defmulti exec (fn [params] (:id params)))
 
 (defmethod exec :default
@@ -55,9 +54,6 @@
   [& body]
   `(future-call (fn [] ~@body)))
 
-;;; For dev efficency mostly
-(def rag-response-memoized (memoize openai/rag-response))
-
 ;;; This is the whole server logic
 (defmethod exec :pquery
   [{:keys [query conversation] :as params}]
@@ -74,9 +70,9 @@
     {:id (:id response)
      :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
       
-;;; Try using way data mechanims
+;;; Using Way datafeed mechanism here, could do that elsewhere
 
-;;; TEMP
+
 (def explain-term-memoized (memoize openai/explain-term))
 
 (defmethod data/data :explain

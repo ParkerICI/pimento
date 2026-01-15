@@ -11,7 +11,6 @@
             )
   )
 
-;;; TODO → way
 (defmethod form/form-field :textareax
   [{:keys [type path label id hidden? disabled? value-fn style] :as args :or {value-fn identity width "100%"}}]
   [:textarea.form-control
@@ -90,7 +89,7 @@
        (assoc-in [:form id :query-text] text)
        )))
 
-;;; TODO differentiate id and type of service
+;;; TODO not really using multimethod, flesh out or simplify
 (defmulti handle-response (fn [id response] id))
 
 (defmethod handle-response :default
@@ -115,14 +114,3 @@
        (assoc-in [:qbox id :spin?] false)
        )))
 
-#_
-(rf/reg-sub
- :qbox-response
- (fn [db [_ id]]
-   (get-in db [:qbox id :response])))
-
-#_
-(rf/reg-sub
- :qbox-results
- (fn [db [_ id]]
-   (get-in db [:qbox id :response :results])))

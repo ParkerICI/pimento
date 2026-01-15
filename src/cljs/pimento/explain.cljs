@@ -7,7 +7,7 @@
 ;; Initialize markdown-it with options
 
 
-;;; TODO → way/feeds. This is like [:data ] but will be nil during fetch, instead of returning the old data
+;;; Like [:data ] but will be nil during fetch, instead of returning the old data
 (rf/reg-sub
  :data-valid
  (fn [db [_ data-id params]]
@@ -73,7 +73,7 @@
             [md/markdown-content explanation id]
             }])]
     (doseq [w widgets]
-      ;; TODO slightly crufty but works
+      ;; slightly crufty but works
       (rf/dispatch [:wire (:id (second w)) :selection :xgen :in]))
     [:div widgets]))
 

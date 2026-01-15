@@ -7,6 +7,8 @@
             [clojure.data.csv :as csv]
             ))
 
+;;; Tools for building the document base
+;;; Not part of live system
 
 ;;; Note: not even doing this, OpenAI says just upload the spreadsheet straight
 

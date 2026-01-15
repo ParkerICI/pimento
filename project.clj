@@ -3,16 +3,18 @@
   :url "http://example.com/FIXME"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
-  :dependencies [[org.clojure/clojure "1.12.3"]
-                 [com.hyperphor/multitool "0.2.2" :exclusions [org.clojure/clojurescript]] ;exclusion TEMP
+  :dependencies [[org.clojure/clojure "1.12.4"]
+                 [com.hyperphor/multitool "0.2.3"
+                  :exclusions [org.clojure/clojurescript]]
                  [com.hyperphor/way "0.1.21"]
 
                  ;; Logging
-                 [com.cognitect.aws/api "LATEST" :exclusions [org.eclipse.jetty/jetty-http
-                                                              org.eclipse.jetty/jetty-io
-                                                              org.eclipse.jetty/jetty-util]]
-                 [com.cognitect.aws/endpoints  "LATEST"]
-                 [com.cognitect.aws/dynamodb "LATEST"]
+                 [com.cognitect.aws/api "0.8.774"
+                  :exclusions [org.eclipse.jetty/jetty-http
+                               org.eclipse.jetty/jetty-io
+                               org.eclipse.jetty/jetty-util]]
+                 [com.cognitect.aws/endpoints "871.2.41.6"]
+                 [com.cognitect.aws/dynamodb "871.2.39.3"]
 
                  ;; frontend
                  ;; See packge.json for the real ones

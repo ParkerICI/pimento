@@ -195,10 +195,7 @@
   (api-post "/responses"
             (merge
              {:model "gpt-4.1"
-              :input q
-              ;; :conversation ...
-              ;; :instructions
-              }
+              :input q}
              params)
             ))
 
@@ -209,33 +206,16 @@
    {
     ;; This causes chunks and doc referenmces to be returned
     ;; :include ["file_search_call.results"]
-    :previous_response_id previous_response_id
+    :previous_response_id previous_response_id ;Continue the last conversation
     :tools [{:type "file_search",
              :vector_store_ids [pici-vector-store]
              :max_num_results 12        ;Was 20, but hopefully this will be faster
              }]}))
 
-(defn rag-plus-compute-response
-  [q]
-  (run-response
-   []
-   {
-    ;; This causes chunks and doc referenmces to be returned
-    :include ["file_search_call.results"]
-    :tools [{:type "file_search",
-             :vector_store_ids [pici-vector-store]
-             :max_num_results 20        ;Was 20, but hopefully this will be faster
-             }
-            #_ {:type "code_interpreter"
-             :container {:type "auto"}
-             }]
-    }))
-
 (def targets
   ["a five-yaar old"
    "a high-school student"
    "an intelligent layman"
-   #_  "a stupid layman"                    ;well they exist ... probably not going to be reading this though!
    "a scientist in a different field"
    "a religious fundamentalist"])
 
