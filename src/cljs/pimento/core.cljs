@@ -10,6 +10,7 @@
    [org.candelbio.multitool.browser :as browser]
    [com.hyperphor.way.web-utils :as wu]
    [pimento.main :as main]
+   [pimento.eli :as eli]
    )) 
 
 (defn header
@@ -25,12 +26,24 @@
   []
   [:div.p-3 {:style {:width "800px"}}
    [:p
-    "PIMENTO is a tool for querying PICI's institutional memory."]
-   [:p "A product of Hyperphor, sponsored by the Parker Institute for Cancer Immunotherapy"]
+    "PIMENTO is a tool for querying PICI's institutional memory. You can ask about research projects, network members, grants, results, companies, or related topics. See the sample questions selector on the main page."]
+
+   [:p "Current dataset includes scientific meeting summaries, project reviews, grant funding, proposals, site reports."]
+
+   #_ [:p "A product of " [:a {:href "https://hyperphor.com"} "Hyperphor"]", sponsored by the " [:a {:href "https://parkerici.org"} "Parker Institute for Cancer Immunotherapy"] "."]
+   
+   [:p
+    "Feedback is welcome, please  post to "
+    [:a {:href "https://pici.slack.com/channels/pimento"} "#pimento"]
+    " or email "
+    [:a {:href "mailto:mtravers@parkerici.org"} "Mike Travers"], 
+    [:a {:href "https://github.com/parkerici/pimento"} ]]
    [:p
     [:a {:href "https://github.com/parkerici/pimento"} "Source"]]
    ])
 
+;;; Email to Slack
+;;; #pimento <pimento-aaaaspsx6iaqn7hwts7pgu2q6y@pici.slack.com>
 
 ;;; TEMP replaces one in  way/ionit.cljs
 ;;; No aparently not loaded in time, put it in core
@@ -52,6 +65,7 @@
     (array-map
      :main main/ui
      :about about
+     :ELI eli/elit
      )
     []]
    ])

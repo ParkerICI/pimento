@@ -7,6 +7,7 @@
             [hyperphor.multitool.cljcore :as ju]
             [pimento.openai :as openai]
             [pimento.logging.dynamo :as dlog]
+            [com.hyperphor.way.data :as data]
             )
   )
 
@@ -14,19 +15,22 @@
   ;; None needed for now, it's all SPA
   )
 
-;;; query I guess could be a string or a map
-(defmulti exec (fn [id query] id))
+(defmulti exec (fn [params] (:id params)))
 
 (defmethod exec :default
-  [id query]
-  (throw (ex-info "No handler" {:id id  :query query})))
+  [params]
+  (throw (ex-info "No handler" params)))
 
 (defroutes api-routes
   ;; Could maybe be done under data, but seems kind of different
   (context "/api" []
-    (GET "/exec" [id query]
-      (wh/content-response
-       (exec (keyword id) query)))))
+    (GET "/exec" req
+      (let [params (-> (:params req)
+                       (update :id keyword)
+                       (update :type keyword)
+                       (update :conversation #(if (= % "null") nil %)))]
+        (wh/content-response
+         (exec params))))))
 
 (defn app
   []
@@ -52,13 +56,13 @@
 
 ;;; This is the whole server logic
 (defmethod exec :pquery
-  [_ query]
+  [{:keys [query conversation] :as params}]
   (let [aug-query (str query query-extra)
         start-time (ju/now)
-        response (openai/run-response aug-query)
+        response (openai/rag-response aug-query conversation)
         end-time (ju/now)]
     (in-background
-      ;; TODO should store githash or something
+      ;; TODO should store githash or something. And version the text doc collection somehow. 
       (dlog/write-item {:query query
                         :response response ;serialized edn of full response
                         :duration (- (.getTime end-time) (.getTime start-time))}))
@@ -66,3 +70,12 @@
     {:id (:id response)
      :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
       
+;;; Using Way datafeed mechanism here, could do that elsewhere
+
+
+(def explain-term-memoized (memoize openai/explain-term))
+
+(defmethod data/data :explain
+  [{:keys [term role]}]
+  (let [explanation (explain-term-memoized term {:target role}) ]
+    [{:explanation explanation}]))

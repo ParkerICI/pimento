@@ -7,16 +7,29 @@
             [com.hyperphor.way.api :as api]
             [hyperphor.multitool.core :as u]
             [com.hyperphor.way.draggable :as d] ;TODO not really
-            #_ hyperphor.nlflame.pins
             [com.hyperphor.way.ui.config :as config]
             )
   )
+
+(defmethod form/form-field :textareax
+  [{:keys [type path label id hidden? disabled? value-fn style] :as args :or {value-fn identity width "100%"}}]
+  [:textarea.form-control
+   {:id id
+    :auto-focus true                    ;ADDING THIS
+    :style style
+    :value @(rf/subscribe [:form-field-value path])
+;    :disabled false
+    :on-change (fn [e]
+                 (rf/dispatch
+                  [:set-form-field-value path (-> e .-target .-value)]))
+    }])
 
 ;;; A generic UI component for NL queries with examples.
 ;;; TODO incorporate error handling (which logically should not be a separate card)
 (defn base-ui
   [id {:keys [examples button-label] :or {button-label "Go"} :as args}]
-  (let [query  @(rf/subscribe [:form-field-value [id :query-text]])]
+  (let [query @(rf/subscribe [:form-field-value [id :query-text]])
+        conversation @(rf/subscribe [:pin id :conversation])] ;TODO hardwiring this, since it is really within the component?
     [:div
      (when examples
        (wu/select-widget
@@ -24,24 +37,24 @@
         nil
         #(rf/dispatch [:qbox-recall-example id %])
         (map :nl examples)
-        "Choose an example or type a query"
+        "Choose a sample query or type one below"
         false
-        {:width "680px" :padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
+        {:padding "5px" :font-size "smaller"} ;TODO change wu/select-widget to accept class args and do this through proper css
         ))
      [:div.hstack.m-3
-      [form/form-field {:type :textarea
+      [form/form-field {:type :textareax
                         :path [id :query-text]
                         :label "Type a query" ;maybe only if no example
-                        :style {:width 600 
-                                :padding "5px"
+                        :style {:padding "5px"
                                 :margin-right "5px"
                                 :font-family "sans-serif"
                                 }
                         }]
       [:div.hstack.m-3
        [:button.btn.btn-primary
-        {:on-click #(rf/dispatch [:qbox-query id query])
-         :style {:margin-right "3px"}} button-label]
+        {:style {:margin-right "3px"}
+         :on-click #(rf/dispatch [:qbox-query id query {:conversation conversation}])} ;TODO backend
+        button-label]
        (when @(rf/subscribe [:qbox-spin? id])
          [wu/spinner 2])]]]))
 
@@ -58,8 +71,8 @@
 
 (rf/reg-event-db
  :qbox-query
- (fn [db [_ id query-text]]
-   (api/ajax-get "/api/exec" {:params {:type :qbox :id id :query query-text}
+ (fn [db [_ id query-text & rest]]
+   (api/ajax-get "/api/exec" {:params (merge {:type :qbox :id id :query query-text} (into {} rest))
                               :handler (fn [response] (rf/dispatch [:qbox-query-response id response]))})
    (assoc-in db [:qbox id :spin?] true)))
 
@@ -76,7 +89,7 @@
        (assoc-in [:form id :query-text] text)
        )))
 
-;;; TODO differntiate id and type of service
+;;; TODO not really using multimethod, flesh out or simplify
 (defmulti handle-response (fn [id response] id))
 
 (defmethod handle-response :default
@@ -101,14 +114,3 @@
        (assoc-in [:qbox id :spin?] false)
        )))
 
-#_
-(rf/reg-sub
- :qbox-response
- (fn [db [_ id]]
-   (get-in db [:qbox id :response])))
-
-#_
-(rf/reg-sub
- :qbox-results
- (fn [db [_ id]]
-   (get-in db [:qbox id :response :results])))

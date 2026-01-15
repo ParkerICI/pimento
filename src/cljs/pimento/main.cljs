@@ -1,14 +1,21 @@
 (ns pimento.main
   (:require [pimento.qbox :as qbox]
             [pimento.markdown :as md]
-            [pimento.pins :as p])
+            [pimento.explain :as xp]
+            [pimento.pins :as p]
+            [com.hyperphor.way.web-utils :as wu]
+            [re-frame.core :as rf]
+            [pimento.eli :as eli]
+            )
   )
 
 (def examples
   ["What efforts exist to analyze adverse immune events?"
    "Which researchers know the most about CAR-T therapy?"
    "Are there any projects or researchers looking into pancreatic cancer?"
+   "What companies have been created as a result of PICI research?"
    "Who does PICI fund at UCSF?"
+   "What projects use sgRNA plasmids?"
    "what grants have gone to Dr. Beatriz Carreno?"
    "Tell me everthing about this project \"Mutant KRAS TCR – from Proof-of-Concept clinical trial to second generation TCR therapy.\""
    "List the 10 most recent PICI grants for amounts over $1,000,000."
@@ -21,8 +28,37 @@
 
 (defn ui
   []
-  [:div
-   [qbox/view :pquery :width "800px" :title "Query" :examples (map (fn [e] {:nl e}) examples)]
-   [md/view :response :width "800px" :title "Response"]
-   (p/wire :pquery :out :response :in)
-   ])
+  (let
+      [v
+       [:div.hstack.gap-3
+        [:div.vstack.col-md-1.gap-3
+         [qbox/view :pquery
+          :width "100%"
+          :title "Query"
+          :examples (map (fn [e] {:nl e}) examples)]
+         [md/view :response
+          :width "100%"
+          :height "100%"
+          :title "Response"]]
+        [:div.vstack.col-md-1.gap-3
+         (when @(rf/subscribe [:pin :response :in])
+           [:span.hstack.text-nowrap
+            "Select terms; explain like I'm"
+            [wu/select-widget :role nil #(rf/dispatch [:set-pin :xgen :role %]) eli/roles
+             nil false {:width "fit-content" :padding 5}]])
+         [xp/generator-view :xgen
+          :width "450px"
+          ]
+         [xp/saved-terms]]]]    
+
+    (p/wire :pquery :out :response :in)
+
+    ;; Conversation
+
+    #_ (p/wire :pquery :conversation :pquery :conversation) ;for now. really just response id
+
+    ;; Explaination
+
+    (p/wire :response :selection :xgen :in)
+    v
+    ))

@@ -53,14 +53,11 @@
                 )))
 
 (defn api-upload
-  [url params file]
+  [file]
   (:body
-   (client/post (str "https://api.openai.com/v1" url)
+   (client/post "https://api.openai.com/v1/files"
                 {
-                 :multipart [;; {:name "title" :content "My Awesome Picture"}
-                             ;; {:name "Content/type" :content "image/jpeg"}
-                             ;; {:name "foo.txt" :part-name "eggplant" :content "Eggplants"}
-                             {:name "purpose" :content "user_data"}
+                 :multipart [{:name "purpose" :content "assistants"} 
                              {:name "file" :content (clojure.java.io/file file)}]
                  :headers {"Authorization" (str "Bearer " (api-key))
                            "OpenAI-Beta" "assistants=v2"}
@@ -134,16 +131,20 @@
 ;;; Entirely new API
 
 ;;; Files
+
 (defn file-ids
   []
   (->> (api-get "/files" {})
        :data
        (map :id)))
 
-(defn upload-file
-  [f]
-  (-> (api-upload "/files" {} f)
-      (get-in [:data :id])))
+;;; api-upload
+
+;;; Files
+
+(defn get-file-content
+  [id]
+  (api-get (u/tx "/files/{{id}}/content") {}))
 
 (comment 
   (doseq [f (hyperphor.multitool.cljcore/list-dir-recursive "/Users/mt/Downloads/Partial Grant Docs/")]
@@ -164,26 +165,71 @@
 
 (def pici-vector-store "vs_691d3d3673808191bd8dcd8a6f64f3c4")
 
+(defn store-status
+  [store-id]
+  (api-get (u/tx "/vector_stores/{{store-id}}") {}))
+
+(comment
+  (store-status pici-vector-store))
+
+;;; Not normally called, this is done via the search tool during query
+(defn search-store
+  [id q]
+  (api-post (u/tx "/vector_stores/{{id}}/search")
+            {:query q}))
+
+(comment
+  (search-store pici-vector-store "what's happening in melanoma?"))
+
+
+;;; Add file to store
+(defn store-add-file
+  [store-id file-id]
+  (api-post (u/tx "/vector_stores/{{store-id}}/files")
+            {:file_id file-id}))
+
+
 ;;; Returns frull response, caller can unpack
 (defn run-response
-  [q & params]
+  [q & [params]]
   (api-post "/responses"
-                (merge
-                 {:model "gpt-4.1"
-                  :input q
-                  ;; :conversation ...
-                  ;; :instructions
-                  ;; :previous_response_id
+            (merge
+             {:model "gpt-4.1"
+              :input q}
+             params)
+            ))
 
-                  ;; This causes chunks and doc referenmces to be returned
-                  ;; :include ["file_search_call.results"]
-                  :tools [{:type "file_search",
-                           :vector_store_ids [pici-vector-store]
-                           :max_num_results 20
-                           }]
-                  }
-                 params)
-                ))
+(defn rag-response
+  [q & [previous_response_id]]
+  (run-response
+   q
+   {
+    ;; This causes chunks and doc referenmces to be returned
+    ;; :include ["file_search_call.results"]
+    :previous_response_id previous_response_id ;Continue the last conversation
+    :tools [{:type "file_search",
+             :vector_store_ids [pici-vector-store]
+             :max_num_results 12        ;Was 20, but hopefully this will be faster
+             }]}))
+
+(def targets
+  ["a five-yaar old"
+   "a high-school student"
+   "an intelligent layman"
+   "a scientist in a different field"
+   "a religious fundamentalist"])
+
+(defn explain-term
+  [term & {:keys [target] :or {target "normal person"}}]
+  (->
+   (run-response (u/tx "Explain the term '{{term}}' as if talking to a {{target}}")
+                 {:instructions "You are an expert in cancer immunotheraphy. Keep responses brief and omit introductions and calls to action"})
+   (get-in [:output 0 :content 0 :text])))
+
+(defn explain-multiple
+  [term]
+  (zipmap targets (map (fn [target] (explain-term term :target target)) targets)))
+
 
 ;;; Not yet used, streaming needs to work on fe, maybe with websocket? Argh
 ;;; Returns a stream of events, see https://platform.openai.com/docs/guides/streaming-responses?api-mode=responses
@@ -220,3 +266,16 @@
               (print delta))
             )))))
             
+(comment
+  ;; Copy stuff from eli.cljs here
+  (defn add-term
+    [term]
+    {:term term
+     :explanations (zipmap roles (map #(explain-term term {:target %}) roles))})
+
+  (defn add-role
+    [role]
+    (map (fn [entry]
+           (assoc-in entry [:explanations role]
+                     (explain-term (:term entry) :target role)))
+         elis)))

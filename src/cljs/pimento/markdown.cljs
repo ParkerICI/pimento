@@ -3,6 +3,7 @@
             [com.hyperphor.way.draggable :as d] ;TODO not really
             [pimento.clipboard :as clip]
             ["markdown-it" :as MarkdownIt]
+            [clojure.string :as str]
             ))
 
 ;; Initialize markdown-it with options
@@ -17,8 +18,22 @@
 
 (defn markdown-content
   [text id]
-  [:div {:id id :dangerouslySetInnerHTML {:__html (markdown->html text)}} ;TODO using a fixed id, bad when we have >1
-  ])
+  [:div
+   {:id (name id)
+    :on-mouse-up #(let [selection (.getSelection js/window)
+                        selected-text (when selection (str/trim (str selection)))]
+                    (when (not (empty? selected-text)) 
+                      (rf/dispatch [:set-pin id :selection selected-text])))
+    :dangerouslySetInnerHTML {:__html (markdown->html text)}
+    }
+   ])
+
+(defn markdown-content-bare
+  [text]
+  [:div
+   {:dangerouslySetInnerHTML {:__html (markdown->html text)}
+    }
+   ])
 
 ;;; Note: reusing id for DOM ID of markdown, seems OK?
 (defn view
@@ -28,10 +43,15 @@
      (merge
       {:id id
        ;; TODO should show a conf message. Also pull out and generalize
-       :title [:div title (when value [:span.float-end [:button.btn.btn-secondary.btn-sm {:on-click #(clip/copy-content (name id))} "Copy"]])]
+       :title [:div title
+               (when value
+                 [:span.float-end
+                  [:button.btn.btn-secondary.btn-sm
+                   {:on-click #(clip/copy-content (name id))}
+                   "Copy"]])]
        :content
        (when value
-         [markdown-content value (name id)])
+         [markdown-content value id])
        :width "450px"
        :height "500px"}
       (dissoc args :title))]))
