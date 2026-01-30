@@ -1,6 +1,7 @@
 (ns pimento.handler
   (:require [compojure.core :refer [defroutes context GET POST make-route routes]]
             [com.hyperphor.way.handler :as wh]
+            [com.hyperphor.way.oauth :as oauth]
             [com.hyperphor.way.views.html :as html]
             [ring.util.response :as response]
             [hyperphor.multitool.core :as u]
@@ -12,8 +13,8 @@
   )
 
 (defroutes site-routes
-  ;; None needed for now, it's all SPA
-  )
+  (GET "/authenticated" req
+    (response/redirect "/")))
 
 (defmulti exec (fn [params] (:id params)))
 
@@ -34,7 +35,7 @@
 
 (defn app
   []
-  (wh/app site-routes api-routes))
+  (wh/app (oauth/wrap-oauth site-routes) api-routes))
 
 (defn get*
   [from key]

@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [environ.core :as env]
             [hyperphor.multitool.cljcore :as ju]
+            [pimento.logging.dynamo :as l]
             ))
 
 (defn -main

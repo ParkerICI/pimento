@@ -8,6 +8,8 @@
                   :exclusions [org.clojure/clojurescript]]
                  [com.hyperphor/way "0.1.21"]
 
+                 [ring-oauth2 "0.3.0"]
+
                  ;; Logging
                  [com.cognitect.aws/api "0.8.774"
                   :exclusions [org.eclipse.jetty/jetty-http
