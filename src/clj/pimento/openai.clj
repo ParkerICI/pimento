@@ -209,7 +209,7 @@
     :previous_response_id previous_response_id ;Continue the last conversation
     :tools [{:type "file_search",
              :vector_store_ids [pici-vector-store]
-             :max_num_results 12        ;Was 20, but hopefully this will be faster
+             :max_num_results 10        ;Was 20, reduced to 12 for speed, to 10 to try to fix timeout issue TODO undo when that is fixed, 
              }]}))
 
 (def targets

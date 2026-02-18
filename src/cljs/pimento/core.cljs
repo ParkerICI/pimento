@@ -28,7 +28,9 @@
    [:p
     "PIMENTO is a tool for querying PICI's institutional memory. You can ask about research projects, network members, grants, results, companies, or related topics. See the sample questions selector on the main page."]
 
-   [:p "Current dataset includes scientific meeting summaries, project reviews, grant funding, proposals, site reports."]
+   [:p "Please be aware: LLMs can generate falsehoods (hallucinations)"]
+
+   [:p "Current dataset includes scientific meeting summaries, project reviews, grant funding, proposals, site reports from 2023-2025."]
 
    #_ [:p "A product of " [:a {:href "https://hyperphor.com"} "Hyperphor"]", sponsored by the " [:a {:href "https://parkerici.org"} "Parker Institute for Cancer Immunotherapy"] "."]
    
