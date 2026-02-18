@@ -189,15 +189,19 @@
             {:file_id file-id}))
 
 
-;;; Returns frull response, caller can unpack
+;;; Returns full response, caller can unpack
 (defn run-response
   [q & [params]]
   (api-post "/responses"
             (merge
              {:model "gpt-4.1"
               :input q}
-             params)
-            ))
+             params)))
+
+(defn get-response
+  "Retrieve a response by ID. Used for polling background requests."
+  [response-id]
+  (api-get (str "/responses/" response-id) {}))
 
 (defn rag-response
   [q & [previous_response_id]]
@@ -209,8 +213,19 @@
     :previous_response_id previous_response_id ;Continue the last conversation
     :tools [{:type "file_search",
              :vector_store_ids [pici-vector-store]
-             :max_num_results 10        ;Was 20, reduced to 12 for speed, to 10 to try to fix timeout issue TODO undo when that is fixed, 
+             :max_num_results 10        ;Was 20, reduced to 12 for speed, to 10 to try to fix timeout issue TODO undo when that is fixed,
              }]}))
+
+(defn rag-response-bg
+  "Submit a RAG query in background mode. Returns immediately with {:id, :status}."
+  [q & [previous_response_id]]
+  (run-response
+   q
+   {:background true
+    :previous_response_id previous_response_id
+    :tools [{:type "file_search",
+             :vector_store_ids [pici-vector-store]
+             :max_num_results 20}]}))
 
 (def targets
   ["a five-yaar old"

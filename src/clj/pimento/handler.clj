@@ -55,21 +55,35 @@
   [& body]
   `(future-call (fn [] ~@body)))
 
-;;; This is the whole server logic
+;;; Submit query in background mode to avoid Heroku 30s timeout.
+;;; Returns response-id immediately; frontend polls via :poll.
 (defmethod exec :pquery
   [{:keys [query conversation] :as params}]
   (let [aug-query (str query query-extra)
-        start-time (ju/now)
-        response (openai/rag-response aug-query conversation)
-        end-time (ju/now)]
-    (in-background
-      ;; TODO should store githash or something. And version the text doc collection somehow. 
-      (dlog/write-item {:query query
-                        :response response ;serialized edn of full response
-                        :duration (- (.getTime end-time) (.getTime start-time))}))
+        response (openai/rag-response-bg aug-query conversation)]
+    {:response-id (:id response)
+     :status (:status response)
+     :query query}))
 
-    {:id (:id response)
-     :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])}))
+;;; Poll for a background response by ID
+(defmethod exec :poll
+  [{:keys [response-id query] :as params}]
+  (let [response (openai/get-response response-id)]
+    (case (:status response)
+      "completed"
+      (do
+        (in-background
+          (dlog/write-item {:query query
+                            :response response}))
+        {:status "completed"
+         :id (:id response)
+         :text (get-in* response [:output #(= (:type %) "message") :content 0 :text])})
+      ("failed" "cancelled" "incomplete")
+      {:status "error"
+       :message (str "Query " (:status response))}
+      ;; queued, in_progress
+      {:status (:status response)
+       :response-id (:id response)})))
       
 ;;; Using Way datafeed mechanism here, could do that elsewhere
 

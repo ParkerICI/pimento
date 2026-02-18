@@ -73,7 +73,7 @@
  :qbox-query
  (fn [db [_ id query-text & rest]]
    (api/ajax-get "/api/exec" {:params (merge {:type :qbox :id id :query query-text} (into {} rest))
-                              :handler (fn [response] (rf/dispatch [:qbox-query-response id response]))})
+                              :handler (fn [response] (rf/dispatch [:qbox-start-polling id response]))})
    (assoc-in db [:qbox id :spin?] true)))
 
 (rf/reg-sub
@@ -84,7 +84,7 @@
 
 (rf/reg-event-db
  :qbox-recall-example
- (fn [db [_ id text]] 
+ (fn [db [_ id text]]
    (-> db
        (assoc-in [:form id :query-text] text)
        )))
@@ -101,16 +101,60 @@
   (rf/dispatch [:set-pin cid :out text])
   (rf/dispatch [:set-pin cid :conversation id]))
 
-;;; TODO methodize
+;;; Polling for background OpenAI responses
+
+(defn- clear-polling
+  "Clear polling interval and timeout for a query box."
+  [db id]
+  (when-let [interval-id (get-in db [:qbox id :poll-interval])]
+    (js/clearInterval interval-id))
+  (when-let [timeout-id (get-in db [:qbox id :poll-timeout])]
+    (js/clearTimeout timeout-id))
+  (update-in db [:qbox id] dissoc :poll-interval :poll-timeout :response-id))
+
 (rf/reg-event-db
- :qbox-query-response
- (fn [db [_ id response]]
-   ;; TODO!
-   #_
-   (when (:error response)
-     (rf/dispatch [:open-card :nlq :error]))
-   (handle-response id response)
-   (-> db
-       (assoc-in [:qbox id :spin?] false)
-       )))
+ :qbox-start-polling
+ (fn [db [_ id {:keys [response-id status query] :as initial}]]
+   (if (= status "completed")
+     (do (handle-response id initial)
+         (assoc-in db [:qbox id :spin?] false))
+     (let [interval-id (js/setInterval
+                        (fn []
+                          (api/ajax-get "/api/exec"
+                                        {:params {:type :qbox
+                                                  :id :poll
+                                                  :response-id response-id
+                                                  :query query}
+                                         :handler (fn [resp]
+                                                    (rf/dispatch [:qbox-poll-response id resp]))}))
+                        3000)
+           timeout-id (js/setTimeout
+                       (fn [] (rf/dispatch [:qbox-poll-timeout id]))
+                       120000)]
+       (-> db
+           (assoc-in [:qbox id :poll-interval] interval-id)
+           (assoc-in [:qbox id :poll-timeout] timeout-id)
+           (assoc-in [:qbox id :response-id] response-id))))))
+
+(rf/reg-event-db
+ :qbox-poll-response
+ (fn [db [_ id {:keys [status] :as response}]]
+   (case status
+     "completed"
+     (do (handle-response id response)
+         (-> (clear-polling db id)
+             (assoc-in [:qbox id :spin?] false)))
+     "error"
+     (do (rf/dispatch [:flash {:class "alert-danger" :message (:message response)}])
+         (-> (clear-polling db id)
+             (assoc-in [:qbox id :spin?] false)))
+     ;; queued, in_progress — keep polling
+     db)))
+
+(rf/reg-event-db
+ :qbox-poll-timeout
+ (fn [db [_ id]]
+   (rf/dispatch [:flash {:class "alert-danger" :message "Query timed out. Please try again."}])
+   (-> (clear-polling db id)
+       (assoc-in [:qbox id :spin?] false))))
 
