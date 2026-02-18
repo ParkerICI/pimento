@@ -1,11 +1,9 @@
 ;;; Way config
 {:app-title "Pimento"
  :app-main "pimento.core.init" 
- ;; https://console.cloud.google.com/auth/clients/120421035775-n7tjld4epehtgp4lkj176mqbbk43bjps.apps.googleusercontent.com?authuser=1&project=pici-production
  :oauth {:client-id #env OAUTH_CLIENT_ID
          :client-secret #env OAUTH_CLIENT_SECRET
-         :callback
-         "https://pimento-348b0b50f416.herokuapp.com/oauth2/google/callback"
+         :callback #env OAUTH_CALLBACK
          }
  :colophon  ["Copyright © " [:a {:href "http://parkerici.org" :style "color: white;"} "Parker Institute"] " 2025-2026"] 
  :heroku {:force-ssl true}
