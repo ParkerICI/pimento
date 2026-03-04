@@ -8,11 +8,12 @@
             [hyperphor.multitool.core :as u]
             ))
 
+(def default-model "gpt-4.1")
+
 (defn api-key
   []
   (env/env :openai-api-key))
 
-(def default-model "gpt-5-mini")
 
 (defn api-get
   [url params]
@@ -70,15 +71,7 @@
 
 (def system-prompt "You are an expert in scientific developments in cancer immunotherapy and related fields. You like to provide clear and conscise explanations that do not rely on specialized knowledge or jargon")
 
-(defn text-query
-  [text]
-  (-> {:model default-model
-       :messages [{:role "system" :content system-prompt}
-                  {:role "user" :content text}
-                  ]}
-      run-chat-completion
-      (get-in [:choices 0 :message :content])
-      ))
+
 
 (defn read-json-safe
   [s]
@@ -116,17 +109,7 @@
       (get-in [:choices 0 :message :content])
       extract-json))
 
-(defn key-concepts
-  [text]
-  (-> {:model default-model
-       :messages [{:role "system" :content system-prompt}
-                  {:role "user" :content   "Identify the key topics in the following text. Include the key phrase or concept and what type it is and/or its role. Output as an array of json maps, each should have fields: term, kind, description. where kind is eg gene, protein, disease, description is a one line description "}
-                  {:role "user" :content text}
-                  ]}
-      json-query
-      first
-      )
-  )
+
 
 ;;; Entirely new API
 
@@ -189,28 +172,45 @@
             {:file_id file-id}))
 
 
-;;; Returns frull response, caller can unpack
+;;; Returns full response, caller can unpack
 (defn run-response
   [q & [params]]
   (api-post "/responses"
             (merge
-             {:model "gpt-4.1"
+             {:model default-model
               :input q}
-             params)
-            ))
+             params)))
 
+(defn get-response
+  "Retrieve a response by ID. Used for polling background requests."
+  [response-id]
+  (api-get (str "/responses/" response-id) {}))
+
+
+#_
 (defn rag-response
   [q & [previous_response_id]]
   (run-response
    q
    {
-    ;; This causes chunks and doc referenmces to be returned
-    ;; :include ["file_search_call.results"]
     :previous_response_id previous_response_id ;Continue the last conversation
     :tools [{:type "file_search",
              :vector_store_ids [pici-vector-store]
-             :max_num_results 10        ;Was 20, reduced to 12 for speed, to 10 to try to fix timeout issue TODO undo when that is fixed, 
+             :max_num_results 12        ;Was 20, reduced to 12 for speed
              }]}))
+
+(defn rag-response-bg
+  "Submit a RAG query in background mode. Returns immediately with {:id, :status}."
+  [q & [previous_response_id]]
+  (run-response
+   q
+   {:background true
+    ;; This causes chunks and doc referenmces to be returned
+    ;; :include ["file_search_call.results"]
+    :previous_response_id previous_response_id
+    :tools [{:type "file_search",
+             :vector_store_ids [pici-vector-store]
+             :max_num_results 20}]}))
 
 (def targets
   ["a five-yaar old"
@@ -226,45 +226,8 @@
                  {:instructions "You are an expert in cancer immunotheraphy. Keep responses brief and omit introductions and calls to action"})
    (get-in [:output 0 :content 0 :text])))
 
-(defn explain-multiple
-  [term]
-  (zipmap targets (map (fn [target] (explain-term term :target target)) targets)))
 
 
-;;; Not yet used, streaming needs to work on fe, maybe with websocket? Argh
-;;; Returns a stream of events, see https://platform.openai.com/docs/guides/streaming-responses?api-mode=responses
-(defn run-response-stream
-  [q & params]
-   (api-post-stream
-    "/responses"
-    (merge
-     {:model "gpt-4.1"
-      :input q
-      :stream true
-      ;; :conversation ...
-      ;; :instructions
-      ;; :previous_response_id
-
-      ;; This causes chunks and doc referenmces to be returned
-      ;; :include ["file_search_call.results"]
-      :tools [{:type "file_search",
-               :vector_store_ids [pici-vector-store]
-               :max_num_results 20
-               }]
-      }
-     params)))
-
-(defn print-stream
-  [stream]
-  (let [reader (clojure.java.io/reader stream)
-        lines (take-while identity (repeatedly #(.readLine reader)))]
-    (doseq [line lines]
-      (when (str/starts-with? line "data:")
-          (let [data (json/read-str (subs line 6) :key-fn keyword)
-                delta (:delta data)]
-            (when delta
-              (print delta))
-            )))))
             
 (comment
   ;; Copy stuff from eli.cljs here

@@ -1,12 +1,12 @@
-(defproject pimento "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject pimento "0.1.2"
+  :description "PICI Institutional Memory"
+  :url "https://pimento-348b0b50f416.herokuapp.com/"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.12.4"]
-                 [com.hyperphor/multitool "0.2.3"
+                 [com.hyperphor/multitool "0.2.4"
                   :exclusions [org.clojure/clojurescript]]
-                 [com.hyperphor/way "0.1.21"]
+                 [com.hyperphor/way "0.2.2"]
 
                  [ring-oauth2 "0.3.0"]
 
