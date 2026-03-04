@@ -3,7 +3,7 @@
             [pimento.markdown :as md]
             [pimento.explain :as xp]
             [pimento.pins :as p]
-            [com.hyperphor.way.web-utils :as wu]
+            [hyperphor.way.web-utils :as wu]
             [re-frame.core :as rf]
             [pimento.eli :as eli]
             )

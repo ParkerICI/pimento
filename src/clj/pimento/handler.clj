@@ -1,14 +1,14 @@
 (ns pimento.handler
   (:require [compojure.core :refer [defroutes context GET POST make-route routes]]
-            [com.hyperphor.way.handler :as wh]
-            [com.hyperphor.way.oauth :as oauth]
-            [com.hyperphor.way.views.html :as html]
+            [hyperphor.way.handler :as wh]
+            [hyperphor.way.oauth :as oauth]
+            [hyperphor.way.views.html :as html]
             [ring.util.response :as response]
             [hyperphor.multitool.core :as u]
             [hyperphor.multitool.cljcore :as ju]
             [pimento.openai :as openai]
             [pimento.logging.dynamo :as dlog]
-            [com.hyperphor.way.data :as data]
+            [hyperphor.way.data :as data]
             )
   )
 

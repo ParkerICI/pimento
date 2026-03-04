@@ -1,6 +1,6 @@
 (ns pimento.explain
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.draggable :as d] ;TODO not really
+            [hyperphor.way.draggable :as d] ;TODO not really
             [pimento.markdown :as md]
             ))
 

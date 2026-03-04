@@ -1,6 +1,6 @@
 (ns pimento.markdown
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.draggable :as d] ;TODO not really
+            [hyperphor.way.draggable :as d] ;TODO not really
             [pimento.clipboard :as clip]
             ["markdown-it" :as MarkdownIt]
             [clojure.string :as str]

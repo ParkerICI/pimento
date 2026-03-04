@@ -1,7 +1,7 @@
 (ns pimento.core
   (:gen-class)
-  (:require [com.hyperphor.way.server :as server]
-            [com.hyperphor.way.config :as config]
+  (:require [hyperphor.way.server :as server]
+            [hyperphor.way.config :as config]
             [pimento.handler :as handler]
             [taoensso.timbre :as log]
             [environ.core :as env]

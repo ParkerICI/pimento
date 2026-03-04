@@ -2,12 +2,11 @@
 
 (ns pimento.qbox
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.form :as form]
-            [com.hyperphor.way.web-utils :as wu]
-            [com.hyperphor.way.api :as api]
+            [hyperphor.way.form :as form]
+            [hyperphor.way.web-utils :as wu]
+            [hyperphor.way.api :as api]
             [hyperphor.multitool.core :as u]
-            [com.hyperphor.way.draggable :as d] ;TODO not really
-            [com.hyperphor.way.ui.config :as config]
+            [hyperphor.way.draggable :as d] ;TODO not really
             )
   )
 

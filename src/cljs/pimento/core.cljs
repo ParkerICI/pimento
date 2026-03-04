@@ -1,14 +1,14 @@
 (ns pimento.core
   (:require
-   [com.hyperphor.way.tabs :as tabs]
-   [com.hyperphor.way.ui.init :as init]
-   [com.hyperphor.way.flash :as flash]
-   [com.hyperphor.way.modal :as modal]
-   com.hyperphor.way.feeds
-   [com.hyperphor.way.ui.config :as config]
+   [hyperphor.way.tabs :as tabs]
+   [hyperphor.way.ui.init :as init]
+   [hyperphor.way.flash :as flash]
+   [hyperphor.way.modal :as modal]
+   hyperphor.way.feeds
+   [hyperphor.way.ui.config :as config]
    [re-frame.core :as rf]
-   [org.candelbio.multitool.browser :as browser]
-   [com.hyperphor.way.web-utils :as wu]
+   [hyperphor.multitool.browser :as browser]
+   [hyperphor.way.web-utils :as wu]
    [pimento.main :as main]
    [pimento.eli :as eli]
    )) 
