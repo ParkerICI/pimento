@@ -4,9 +4,11 @@
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.12.4"]
-                 [com.hyperphor/multitool "0.2.4"
+                 [com.hyperphor/multitool "0.3.3"
                   :exclusions [org.clojure/clojurescript]]
-                 [com.hyperphor/way "0.2.2"]
+                 [com.hyperphor/way "0.2.8"]
+                 [com.hyperphor/ellum "0.1.6"]
+                 [org.clojure/data.csv "1.1.0"]
 
                  [ring-oauth2 "0.3.0"]
 

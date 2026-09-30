@@ -1,115 +1,33 @@
-;;; Copied from kg
-
 (ns pimento.openai
-  (:require [hato.client :as client]
-            [clojure.data.json :as json]
-            [environ.core :as env]
-            [clojure.string :as str]
+  (:require [clojure.java.io :as io]
+            [hato.client :as client]
             [hyperphor.multitool.core :as u]
+            [hyperphor.ellum.providers.openai :as openai]
             ))
 
-(def default-model "gpt-4.1")
+;;; Low-level HTTP client (auth, GET/POST, Responses API) is provided by ellum.
+(def api-key openai/api-key)
+(def api-get openai/api-get)
+(def api-post openai/api-post)
+(def run-response openai/run-response)
 
-(defn api-key
-  []
-  (env/env :openai-api-key))
-
-
-(defn api-get
-  [url params]
+;;; File upload isn't part of ellum's API surface; keep it here.
+(defn api-upload
+  [file]
   (:body
-   (client/get (str "https://api.openai.com/v1" url)
-              {:query-params params
-               :headers {"Authorization" (str "Bearer " (api-key))
-                         "OpenAI-Beta" "assistants=v2"}
-               :as :json
-               })))
+   (client/post "https://api.openai.com/v1/files"
+                {:multipart [{:name "purpose" :content "assistants"}
+                             {:name "file" :content (io/file file)}]
+                 :headers {"Authorization" (str "Bearer " (api-key))
+                           "OpenAI-Beta" "assistants=v2"}
+                 :as :json
+                 })))
 
 (defn list-models
   []
   (api-get "/models" {}))
 
-(defn api-post
-  [url params]
-  (:body
-   (client/post (str "https://api.openai.com/v1" url)
-                {:body (clojure.data.json/write-str params)
-                 :content-type :application/json
-                 :headers {"Authorization" (str "Bearer " (api-key))
-                           "OpenAI-Beta" "assistants=v2"}
-                 :as :json
-                 })))
-
-(defn api-post-stream
-  [url params]
-  (:body
-   (client/post (str "https://api.openai.com/v1" url)
-                {:body (clojure.data.json/write-str params)
-                 :content-type :application/json
-                 :headers {"Authorization" (str "Bearer " (api-key))
-                           "OpenAI-Beta" "assistants=v2"}
-                 :as :stream
-                 ;; :async? true
-                 }
-                )))
-
-(defn api-upload
-  [file]
-  (:body
-   (client/post "https://api.openai.com/v1/files"
-                {
-                 :multipart [{:name "purpose" :content "assistants"} 
-                             {:name "file" :content (clojure.java.io/file file)}]
-                 :headers {"Authorization" (str "Bearer " (api-key))
-                           "OpenAI-Beta" "assistants=v2"}
-                 :as :json
-                 })))
-
-(defn run-chat-completion
-  [q]
-  (api-post "/chat/completions" q))
-
 (def system-prompt "You are an expert in scientific developments in cancer immunotherapy and related fields. You like to provide clear and conscise explanations that do not rely on specialized knowledge or jargon")
-
-
-
-(defn read-json-safe
-  [s]
-  (try
-    (json/read-str s :key-fn keyword)
-    (catch Throwable e
-      s)))
-
-;;; Extract code from a llm response (md).
-;;; Assumes a type, assumes only one code block
-;;; Returns [type code non-code-text]
-(defn extract-code
-  [s]
-  (let [[m? type code] (re-find #"```(.*)\n([\s\S]*?)```" s)]
-    (when m?
-      [(keyword type) code (str/replace s m? "")])))
-
-;;; TODO sometimes it returens separate ```json elements! Argh
-(defn extract-json
-  [s]
-  (let [[type code text] (extract-code s)]
-    (if (= type :json)
-      [(read-json-safe code) text]
-      ;; Or, maybe encoded differently
-      (let [xtract (or (re-find #"JSON[\s\S]*?(\[[\s\S]*\])" s)
-                       (re-find  #"(?s)[\s\S]*?(\[\s*\{[\s\S]*\}\s*\])" s))] ;finds [{ ... }]
-        (if xtract
-          [(read-json-safe (second xtract)) s]
-          nil)))))
-
-(defn json-query
-  [q]
-  (-> q
-      run-chat-completion
-      (get-in [:choices 0 :message :content])
-      extract-json))
-
-
 
 ;;; Entirely new API
 
@@ -171,15 +89,6 @@
   (api-post (u/tx "/vector_stores/{{store-id}}/files")
             {:file_id file-id}))
 
-
-;;; Returns full response, caller can unpack
-(defn run-response
-  [q & [params]]
-  (api-post "/responses"
-            (merge
-             {:model default-model
-              :input q}
-             params)))
 
 (defn get-response
   "Retrieve a response by ID. Used for polling background requests."
