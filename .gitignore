@@ -14,3 +14,23 @@ pom.xml.asc
 node_modules/
 .shadow-cljs/
 package-lock.json
+
+# Build output
+/resources/public/cljs-out/
+/.lein-failures
+/src/clj/version.clj
+/src/cljc/version.clj
+
+# Local / private material: never commit
+/docs/
+/scrap/
+/TODO.org
+/bin/deploy_env.sh
+*.bak
+.env
+/src/clj/pimento/old_files.edn
+/resources/text/
+
+# OS / editor
+.DS_Store
+/.claude/

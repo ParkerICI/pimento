@@ -1,8 +1,8 @@
 (defproject pimento "0.1.2"
   :description "PICI Institutional Memory"
-  :url "https://pimento-348b0b50f416.herokuapp.com/"
-  :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
-            :url "https://www.eclipse.org/legal/epl-2.0/"}
+  :url "https://github.com/ParkerICI/pimento"
+  :license {:name "Apache-2.0"
+            :url "https://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [[org.clojure/clojure "1.12.4"]
                  [com.hyperphor/multitool "0.3.3"
                   :exclusions [org.clojure/clojurescript]]

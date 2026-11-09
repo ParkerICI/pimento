@@ -48,7 +48,7 @@
   (api-get (u/tx "/files/{{id}}/content") {}))
 
 (comment 
-  (doseq [f (hyperphor.multitool.cljcore/list-dir-recursive "/Users/mt/Downloads/Partial Grant Docs/")]
+  (doseq [f (hyperphor.multitool.cljcore/list-dir-recursive "path/to/docs/")]
     (upload-file f)))
 
 ;;; Vector stores

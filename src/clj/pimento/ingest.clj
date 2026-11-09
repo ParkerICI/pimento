@@ -24,29 +24,19 @@
 
 (comment
 
-  (def awards (->> "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.tsv"
+  (def awards (->> "path/to/funding-requests.tsv"
                    read-tsv-maps
                    #_ (map u/clean-map)))
 
-  (def cols (map keyword (first  (csv/read-csv (clojure.java.io/reader "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.tsv") :separator \tab))))
+  (def cols (map keyword (first  (csv/read-csv (clojure.java.io/reader "path/to/funding-requests.tsv") :separator \tab))))
 
   (def col-counts (zipmap cols (map #(count (u/mapf % awards)) cols)))
 
 ;;; ⩓⩔⩓ Upload .csv ⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔⩓⩔
 
-  (api-upload "/Users/mt/Downloads/2025.12.04 - Export All Awarded - Salesforce Funding Request.csv")
+  (api-upload "path/to/funding-requests.csv")
 
-  {:expires_at nil,
-   :purpose "assistants",
-   :filename "2025.12.04 - Export All Awarded - Salesforce Funding Request.csv",
-   :status "processed",
-   :id "file-GFVFZJCahKRpJnr9gqkpDq",
-   :bytes 7680911,
-   :object "file",
-   :created_at 1765173144,
-   :status_details nil}
-
-  (store-add-file pici-vector-store  "file-GFVFZJCahKRpJnr9gqkpDq")
+  (store-add-file pici-vector-store "<file-id from upload>")
 
 
 ;;; Welp, that doesn't work that well, so go back to original plan

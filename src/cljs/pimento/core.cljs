@@ -44,8 +44,6 @@
     [:a {:href "https://github.com/parkerici/pimento"} "Source"]]
    ])
 
-;;; Email to Slack
-;;; #pimento <pimento-aaaaspsx6iaqn7hwts7pgu2q6y@pici.slack.com>
 
 ;;; TEMP replaces one in  way/ionit.cljs
 ;;; No aparently not loaded in time, put it in core

@@ -1,7 +1,7 @@
 {
     "name": "pimento",
     "version": "1.0.0",
-    "description": "PICI insttitutional memory",
+    "description": "PICI institutional memory",
     "main": "index.js",
     "directories": {
         "doc": "doc",
@@ -33,10 +33,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/parkerici/pimento.git"
+        "url": "git+https://github.com/ParkerICI/pimento.git"
     },
     "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "homepage": "https://github.com/hyperphor/nlflame"
+    "author": "Parker Institute for Cancer Immunotherapy",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/ParkerICI/pimento"
 }
