@@ -12,7 +12,6 @@
 (defn main1
   [port]
   (log/info "Starting server on port" port)
-  #_ (heroku-deploy-hack)
   (server/start (Integer. port) (handler/app))
   ;; Smart enough to be a no-op on server
   (ju/open-url (format "http://localhost:%s" port))
@@ -25,7 +24,7 @@
     (config/read-config config)
     (main1  (or port (env/env :port) ))))
 
-;;; Startup bypassing oauth (should just have a separate config, that's what its for!
+;;; Startup bypassing OAuth
 (defn dev-mode
   [port]
   (config/set-config-map!

@@ -23,18 +23,6 @@
     result))
 
 
-#_  #:shape{AttributeValue
-          {:L [:seq-of shape/AttributeValue],
-           :M [:map-of string shape/AttributeValue],
-           :NS [:seq-of string],
-           :BOOL boolean,
-           :B blob,
-           :SS [:seq-of string],
-           :NULL boolean,
-           :S string,
-           :BS [:seq-of blob],
-           :N string}}
-
 ;;; This could do more. 
 (defn tag-attribute
   [v]
@@ -92,11 +80,11 @@
 
 (defn add-datetime
   [map]
-  (assoc map :datetime (ju/date-format (ju/now) "YYYY-MM-dd HH:MM:SS")))
+  (assoc map :datetime (ju/date-format (ju/now) "yyyy-MM-dd HH:mm:ss")))
 
 (defn add-user
   [map]
-  (assoc map :user (env/env :logname))) ;TODO see what this does on Heruo,
+  (assoc map :user (env/env :logname)))
 
 
 (defn write-item

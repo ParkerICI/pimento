@@ -32,14 +32,12 @@
 
    [:p "Current dataset includes scientific meeting summaries, project reviews, grant funding, proposals, site reports from 2023-2025."]
 
-   #_ [:p "A product of " [:a {:href "https://hyperphor.com"} "Hyperphor"]", sponsored by the " [:a {:href "https://parkerici.org"} "Parker Institute for Cancer Immunotherapy"] "."]
-   
    [:p
-    "Feedback is welcome, please  post to "
+    "Feedback is welcome, please post to "
     [:a {:href "https://pici.slack.com/channels/pimento"} "#pimento"]
     " or email "
-    [:a {:href "mailto:mtravers@parkerici.org"} "Mike Travers"], 
-    [:a {:href "https://github.com/parkerici/pimento"} ]]
+    [:a {:href "mailto:mtravers@parkerici.org"} "Mike Travers"]
+    "."]
    [:p
     [:a {:href "https://github.com/parkerici/pimento"} "Source"]]
    ])
@@ -85,10 +83,4 @@
 
 (defn ^:export init
   []
-  #_ (init/init app-ui nil)
   (way-init app-ui nil))
-
-
-
-
-

@@ -40,8 +40,8 @@ No test suite exists yet.
 ### Backend (src/clj/pimento/)
 
 - **core.clj** — Server entry point. `dev-mode` bypasses OAuth; `-main` is the production entry.
-- **handler.clj** — HTTP routing. The `exec` multimethod dispatches API calls by `:id`. The `:pquery` method is the main RAG query path; `:explain` handles term explanations via Way's data feed mechanism. All queries are logged to DynamoDB in a background future.
-- **openai.clj** — OpenAI API client. Uses the Responses API (`/v1/responses`) with `gpt-4.1` for RAG queries and `gpt-5-mini` for chat completions. The vector store ID is hardcoded as `pici-vector-store`. `rag-response` does file_search against this store. `explain-term` generates explanations at configurable complexity levels.
+- **handler.clj** — HTTP routing. The `exec` multimethod dispatches API calls by `:id`. `:pquery` submits a background RAG query and returns a response id; `:poll` checks it and returns the text when complete. `:explain` handles term explanations via Way's data feed mechanism. Completed queries are logged to DynamoDB in a background future.
+- **openai.clj** — Thin layer over `com.hyperphor/ellum`'s OpenAI provider (Responses API). The vector store ID is hardcoded as `pici-vector-store`. `rag-response-bg` does file_search against this store in background mode. `explain-term` generates explanations at configurable complexity levels.
 - **ingest.clj** — Utilities for converting grant documents (TSV/CSV) to markdown for upload to OpenAI.
 - **logging/dynamo.clj** — DynamoDB client for the `pimento_log` table (query/response audit log).
 
@@ -67,8 +67,8 @@ Way provides the web application skeleton: server startup, OAuth middleware, HTM
 
 1. User submits query in qbox → AJAX to `/api/exec?id=pquery`
 2. Handler appends "Focus on PICI sponsored projects and network members." to query
-3. `openai/rag-response` calls OpenAI Responses API with file_search tool against the PICI vector store
-4. Response logged to DynamoDB, text returned to frontend
+3. `openai/rag-response-bg` starts a background Responses API call with file_search against the PICI vector store (avoids Heroku's 30s timeout)
+4. Frontend polls `/api/exec?id=poll` until the response completes; the completed response is logged to DynamoDB
 5. Frontend renders markdown; user can select terms for ELI explanations
 
 ## Configuration

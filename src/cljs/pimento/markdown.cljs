@@ -47,7 +47,6 @@
                (when value
                  [:span.float-end
                   [:button.btn.btn-secondary.btn-sm
-                   #_ {:on-click #(clip/copy-content (name id))} ; copy as html
                    {:on-click #(clip/copy-markdown value)}       ; copy as md
                    "Copy"]])]
        :content

@@ -66,8 +66,6 @@
      "a cancer patient"
      "T cell exhaustion happens when your immune system’s T cells, which normally fight cancer or infections, get worn out from working too hard for too long. When this happens, the T cells become less effective at killing cancer cells and may stop working properly, making it harder for your body to fight the cancer."}}])
 
-#_ (def roles (keys (:explanations (first elis))))
-
 ;;; Used in UI, first is default
 (def roles
   ["an intelligent layman"

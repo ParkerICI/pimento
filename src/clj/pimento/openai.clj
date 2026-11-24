@@ -15,8 +15,6 @@
   (->> (openai/list-files)
        (map :id)))
 
-;;; Files
-
 (comment 
   (doseq [f (hyperphor.multitool.cljcore/list-dir-recursive "path/to/docs/")]
     (openai/upload-file f)))
@@ -31,17 +29,8 @@
 (comment
   (openai/search-vector-store pici-vector-store "what's happening in melanoma?"))
 
-#_
-(defn rag-response
-  [q & [previous_response_id]]
-  (openai/run-response
-   q
-   {
-    :previous_response_id previous_response_id ;Continue the last conversation
-    :tools [{:type "file_search",
-             :vector_store_ids [pici-vector-store]
-             :max_num_results 12        ;Was 20, reduced to 12 for speed
-             }]}))
+;;; Used by handler to poll background responses
+(def get-response openai/get-response)
 
 (defn rag-response-bg
   "Submit a RAG query in background mode. Returns immediately with {:id, :status}."
@@ -60,8 +49,7 @@
   ["a five-year old"
    "a high-school student"
    "an intelligent layman"
-   "a scientist in a different field"
-   "a religious fundamentalist"])
+   "a scientist in a different field"])
 
 (defn explain-term
   [term & {:keys [target] :or {target "normal person"}}]
@@ -70,9 +58,6 @@
                  {:instructions "You are an expert in cancer immunotheraphy. Keep responses brief and omit introductions and calls to action"})
    (get-in [:output 0 :content 0 :text])))
 
-
-
-            
 (comment
   ;; Copy stuff from eli.cljs here
   (defn add-term

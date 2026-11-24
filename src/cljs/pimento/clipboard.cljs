@@ -28,13 +28,3 @@
     (-> (.. js/navigator -clipboard (write #js [clipboard-item]))
         (.then #(js/console.log "Content copied!"))
         (.catch #(js/console.error "Failed to copy:" %)))))
-
-
-;; Usage with a button
-#_
-(defn setup-copy-button! []
-  (when-let [btn (js/document.getElementById "copyBtn")]
-    (.addEventListener btn "click"
-      (fn [_]
-        (when-let [widget (js/document.getElementById "markdown-widget")]
-          (copy-content widget))))))
